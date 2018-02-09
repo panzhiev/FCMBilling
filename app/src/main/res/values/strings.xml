@@ -10,4 +10,6 @@
     <string name="dialog_error_title">Error</string>
     <string name="error_message">Could not connect to the server</string>
 
+    <string name="key">MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAm9sqzl2ZCezjBgxi28XGHuEmyYdlzkFxUK1kI2mPq+oQLnpOQCzaONsS2/eZiw0LbW7n53zEmBk9eZH54JYP0kzZ4Tlw0Me+eKoMvzXWNhAb5HKOZfJPDKnR2Tu9ZUsOFjlR02rxux/3mj+ii7S7PmVdhxhkoBX8lez/yAOw6o/IHV703zlBWV8BBvvHQwWh1qb67iHHpNbaWFksetPhBC0AkARdWoVLGcjyffGBE5TYEk6G23YJfi7myxyLb9CtAiXi2pNfPHd2IDU6H40bG79v61m+HlzMM59+oJceWGaFrt1Fic1pk3xMV7D1gKxPScSLM4ldEcJJDPO6331yrQIDAQAB</string>
+
 </resources>
