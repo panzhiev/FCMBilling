@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">FCM BILLING</string>
+    <string name="title_activity_result_notification">ResultNotificationActivity</string>
+    <string name="title_activity_purchase">Coins for sale</string>
+    <string name="buy_coins">buy coins</string>
+    <string name="button_buy">buy</string>
+
+    <!-- Dialog -->
+    <string name="dialog_action_ok">OK</string>
+    <string name="dialog_error_title">Error</string>
+    <string name="error_message">Could not connect to the server</string>
+
+</resources>

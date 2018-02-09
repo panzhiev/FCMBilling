@@ -1,0 +1,24 @@
+<resources>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <!-- TextSizes -->
+    <dimen name="textSizeXXSmall">9sp</dimen>
+    <dimen name="textSizeXSmall">11sp</dimen>
+    <dimen name="textSizeSmall">13sp</dimen>
+    <dimen name="textSizeMedium">17sp</dimen>
+    <dimen name="textSizeLarge">20sp</dimen>
+    <dimen name="textSizeXLarge">24sp</dimen>
+    <dimen name="textSizeXXLarge">28sp</dimen>
+    <dimen name="textSizeXXXLarge">32sp</dimen>
+
+    <!-- Icons -->
+    <dimen name="dimen_currency_icon">32dp</dimen>
+
+    <!-- Dividers -->
+    <dimen name="divider_s">8dp</dimen>
+    <dimen name="divider_m">12dp</dimen>
+    <dimen name="divider_l">16dp</dimen>
+    <dimen name="divider_xl">20dp</dimen>
+</resources>

@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "69027682401",
+    "project_id": "fcmexample-eb149"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:69027682401:android:26c28c686f06e42e",
+        "android_client_info": {
+          "package_name": "com.panzhyiev.fcmexample"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "69027682401-g49q3bur33flrgtq50ggit2ta4qc8i50.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBFDdyA12yMcs67wz9fkcKoSq_obllcwsw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
