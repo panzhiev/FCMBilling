@@ -1,5 +1,6 @@
 package com.panzhyiev.fcmexample.ui.activity.purchaseActivity;
 
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -28,6 +29,9 @@ public class PurchaseActivity extends AppCompatActivity implements PurchaseAdapt
     @BindView(R.id.rv_coins_for_sale)
     public RecyclerView mRvCoinsForSale;
 
+    @BindView(R.id.swipe_refresh_purchases)
+    public SwipeRefreshLayout mSwipeRefreshLayout;
+
     private PurchaseAdapter mPurchaseAdapter;
 
     @Override
@@ -38,6 +42,7 @@ public class PurchaseActivity extends AppCompatActivity implements PurchaseAdapt
         Toolbar toolbar = findViewById(R.id.toolbar_coins_sale);
         setSupportActionBar(toolbar);
         setUpRecyclerView();
+        setListeners();
 
         try {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -61,7 +66,10 @@ public class PurchaseActivity extends AppCompatActivity implements PurchaseAdapt
         list.add(new CoinBuyPojo("dash", "Dash", "DASH", "0.001"));
 
         setList(list);
+    }
 
+    private void setListeners() {
+        mSwipeRefreshLayout.setOnRefreshListener(() -> mSwipeRefreshLayout.setRefreshing(false));
     }
 
     @Override
