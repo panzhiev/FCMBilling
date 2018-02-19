@@ -5,14 +5,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
+    android:id="@+id/ll_main"
+    android:orientation="vertical"
     tools:context=".ui.activity.MainActivity">
 
     <Button
         android:id="@+id/btn_buy_coins"
         style="@style/Widget.AppCompat.Button.Colored"
-        android:layout_width="wrap_content"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:text="@string/buy_coins"
+        android:textColor="@color/white"
+        android:theme="@style/ColorPrimaryButton" />
+
+    <Button
+        android:id="@+id/btn_generate_eth_addresses"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="ETHEREUM"
         android:textColor="@color/white"
         android:theme="@style/ColorPrimaryButton" />
 

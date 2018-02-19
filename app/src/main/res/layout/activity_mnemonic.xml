@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="@dimen/divider_s"
+    tools:context="ui.activity.MnemonicActivity">
+
+    <TextView
+        android:id="@+id/tv_list_words"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/btn_generate_seed"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="Seed"
+        android:textColor="@color/white"
+        android:theme="@style/ColorPrimaryButton" />
+
+    <TextView
+        android:id="@+id/tv_seed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/btn_generate_private"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="Private"
+        android:textColor="@color/white"
+        android:theme="@style/ColorPrimaryButton" />
+
+    <TextView
+        android:id="@+id/tv_priv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/btn_generate_public"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="Public"
+        android:textColor="@color/white"
+        android:theme="@style/ColorPrimaryButton" />
+
+    <TextView
+        android:id="@+id/tv_pub"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/btn_generate_address"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="Address"
+        android:textColor="@color/white"
+        android:theme="@style/ColorPrimaryButton" />
+
+    <TextView
+        android:id="@+id/tv_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+</LinearLayout>

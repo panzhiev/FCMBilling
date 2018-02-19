@@ -31,10 +31,13 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.android.vending.billing.IInAppBillingService;
+import com.panzhyiev.fcmexample.iab.sample2.InAppProduct;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -128,6 +131,8 @@ public class IabHelper {
     public static final int BILLING_RESPONSE_RESULT_ERROR = 6;
     public static final int BILLING_RESPONSE_RESULT_ITEM_ALREADY_OWNED = 7;
     public static final int BILLING_RESPONSE_RESULT_ITEM_NOT_OWNED = 8;
+
+    public static final int REQUEST_CODE_BUY = 1234;
 
     // IAB Helper error codes
     public static final int IABHELPER_ERROR_BASE = -1000;
@@ -252,29 +257,29 @@ public class IabHelper {
 
                     // Check for v5 subscriptions support. This is needed for
                     // getBuyIntentToReplaceSku which allows for subscription update
-                    response = mService.isBillingSupported(5, packageName, ITEM_TYPE_SUBS);
-                    if (response == BILLING_RESPONSE_RESULT_OK) {
-                        logDebug("Subscription re-signup AVAILABLE.");
-                        mSubscriptionUpdateSupported = true;
-                    } else {
-                        logDebug("Subscription re-signup not available.");
-                        mSubscriptionUpdateSupported = false;
-                    }
-
-                    if (mSubscriptionUpdateSupported) {
-                        mSubscriptionsSupported = true;
-                    } else {
-                        // check for v3 subscriptions support
-                        response = mService.isBillingSupported(3, packageName, ITEM_TYPE_SUBS);
-                        if (response == BILLING_RESPONSE_RESULT_OK) {
-                            logDebug("Subscriptions AVAILABLE.");
-                            mSubscriptionsSupported = true;
-                        } else {
-                            logDebug("Subscriptions NOT AVAILABLE. Response: " + response);
-                            mSubscriptionsSupported = false;
-                            mSubscriptionUpdateSupported = false;
-                        }
-                    }
+//                    response = mService.isBillingSupported(5, packageName, ITEM_TYPE_SUBS);
+//                    if (response == BILLING_RESPONSE_RESULT_OK) {
+//                        logDebug("Subscription re-signup AVAILABLE.");
+//                        mSubscriptionUpdateSupported = true;
+//                    } else {
+//                        logDebug("Subscription re-signup not available.");
+//                        mSubscriptionUpdateSupported = false;
+//                    }
+//
+//                    if (mSubscriptionUpdateSupported) {
+//                        mSubscriptionsSupported = true;
+//                    } else {
+//                        // check for v3 subscriptions support
+//                        response = mService.isBillingSupported(3, packageName, ITEM_TYPE_SUBS);
+//                        if (response == BILLING_RESPONSE_RESULT_OK) {
+//                            logDebug("Subscriptions AVAILABLE.");
+//                            mSubscriptionsSupported = true;
+//                        } else {
+//                            logDebug("Subscriptions NOT AVAILABLE. Response: " + response);
+//                            mSubscriptionsSupported = false;
+//                            mSubscriptionUpdateSupported = false;
+//                        }
+//                    }
 
                     mSetupDone = true;
                 }
@@ -1112,5 +1117,51 @@ public class IabHelper {
 
     void logWarn(String msg) {
         Log.w(mDebugTag, "In-app billing warning: " + msg);
+    }
+
+    public List<InAppProduct> getInAppPurchases(String type, String... productIds) throws Exception {
+        ArrayList<String> skuList = new ArrayList<>(Arrays.asList(productIds));
+        Bundle query = new Bundle();
+        query.putStringArrayList("ITEM_ID_LIST", skuList);
+        Bundle skuDetails = mService.getSkuDetails(
+                3, mContext.getPackageName(), type, query);
+        ArrayList<String> responseList = skuDetails.getStringArrayList("DETAILS_LIST");
+        List<InAppProduct> result = new ArrayList<>();
+        for (String responseItem : responseList) {
+            JSONObject jsonObject = new JSONObject(responseItem);
+            InAppProduct product = new InAppProduct();
+            // "com.example.myapp_testing_inapp1"
+            product.productId = jsonObject.getString("productId");
+            // Покупка
+            product.storeName = jsonObject.getString("title");
+            // Детали покупки
+            product.storeDescription = jsonObject.getString("description");
+            // "0.99USD"
+            product.price = jsonObject.getString("price");
+            // "true/false"
+            product.isSubscription = jsonObject.getString("type").equals("subs");
+            // "990000" = цена x 1000000
+            product.priceAmountMicros =
+                    Integer.parseInt(jsonObject.getString("price_amount_micros"));
+            // USD
+            product.currencyIsoCode = jsonObject.getString("price_currency_code");
+            result.add(product);
+        }
+        return result;
+    }
+
+    public void purchaseProduct(Activity activity, InAppProduct product) throws Exception {
+        String sku = product.getSku();
+        String type = product.getType();
+        // сюда вы можете добавить произвольные данные
+        // потом вы сможете получить их вместе с покупкой
+        String developerPayload = "12345";
+        Bundle buyIntentBundle = mService.getBuyIntent(
+                3, mContext.getPackageName(),
+                sku, type, developerPayload);
+        PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
+        activity.startIntentSenderForResult(pendingIntent.getIntentSender(),
+                REQUEST_CODE_BUY, new Intent(), Integer.valueOf(0), Integer.valueOf(0),
+                Integer.valueOf(0), null);
     }
 }

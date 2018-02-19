@@ -1,8 +1,15 @@
 package com.panzhyiev.fcmexample.ui.activity.purchaseActivity;
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,10 +19,13 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.Toast;
 
+import com.android.vending.billing.IInAppBillingService;
 import com.panzhyiev.fcmexample.R;
 import com.panzhyiev.fcmexample.db.room.entity.CoinBuyPojo;
+import com.panzhyiev.fcmexample.iab.sample2.InAppProduct;
 import com.panzhyiev.fcmexample.iab.util.IabBroadcastReceiver;
 import com.panzhyiev.fcmexample.iab.util.IabHelper;
 import com.panzhyiev.fcmexample.iab.util.IabResult;
@@ -23,15 +33,22 @@ import com.panzhyiev.fcmexample.iab.util.Inventory;
 import com.panzhyiev.fcmexample.iab.util.Purchase;
 import com.panzhyiev.fcmexample.ui.ILoadingView;
 import com.panzhyiev.fcmexample.ui.activity.MainActivity;
+import com.panzhyiev.fcmexample.ui.activity.purchaseActivity.adapter.InAppProductAdapter;
 import com.panzhyiev.fcmexample.ui.activity.purchaseActivity.adapter.PurchaseAdapter;
 import com.panzhyiev.fcmexample.utils.GridSpacingItemDecoration;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class PurchaseActivity extends AppCompatActivity implements PurchaseAdapter.OnBuyClickListener, ILoadingView, IabBroadcastReceiver.IabBroadcastListener,
+import static com.panzhyiev.fcmexample.iab.util.IabHelper.REQUEST_CODE_BUY;
+
+public class PurchaseActivity extends AppCompatActivity implements ILoadingView, IabBroadcastReceiver.IabBroadcastListener, InAppProductAdapter.OnBuyClickListener,
         DialogInterface.OnClickListener {
 
     // Debug tag, for logging
@@ -51,6 +68,24 @@ public class PurchaseActivity extends AppCompatActivity implements PurchaseAdapt
     static final String SKU_MIOTA = "miota";
     static final String SKU_DASH = "dash";
 
+    public static final int BILLING_RESPONSE_RESULT_OK = 0;
+    public static final int BILLING_RESPONSE_RESULT_USER_CANCELED = 1;
+    public static final int BILLING_RESPONSE_RESULT_SERVICE_UNAVAILABLE = 2;
+    public static final int BILLING_RESPONSE_RESULT_BILLING_UNAVAILABLE = 3;
+    public static final int BILLING_RESPONSE_RESULT_ITEM_UNAVAILABLE = 4;
+    public static final int BILLING_RESPONSE_RESULT_DEVELOPER_ERROR = 5;
+    public static final int BILLING_RESPONSE_RESULT_ERROR = 6;
+    public static final int BILLING_RESPONSE_RESULT_ITEM_ALREADY_OWNED = 7;
+    public static final int BILLING_RESPONSE_RESULT_ITEM_NOT_OWNED = 8;
+
+    public static final int PURCHASE_STATUS_PURCHASED = 0;
+    public static final int PURCHASE_STATUS_CANCELLED = 1;
+    public static final int PURCHASE_STATUS_REFUNDED = 2;
+
+    //item types
+    public static final String ITEM_TYPE_INAPP = "inapp";
+    public static final String ITEM_TYPE_SUBS = "subs";
+
     // (arbitrary) request code for the purchase flow
     static final int RC_REQUEST = 10001;
 
@@ -67,6 +102,9 @@ public class PurchaseActivity extends AppCompatActivity implements PurchaseAdapt
     public SwipeRefreshLayout mSwipeRefreshLayout;
 
     private PurchaseAdapter mPurchaseAdapter;
+    private InAppProductAdapter mInAppProductAdapter;
+
+    IInAppBillingService inAppBillingService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,22 +121,22 @@ public class PurchaseActivity extends AppCompatActivity implements PurchaseAdapt
             npe.printStackTrace();
         }
 
-        ArrayList<CoinBuyPojo> list = new ArrayList<>();
-
-        list.add(new CoinBuyPojo("bitcoin", "Bitcoin", "BTC", "0.00001"));
-        list.add(new CoinBuyPojo("ethereum", "Ethereum", "ETH", "0.0001"));
-        list.add(new CoinBuyPojo("ripple", "Ripple", "XRP", "0.1"));
-        list.add(new CoinBuyPojo("bitcoin-cash", "Bitcoin Cash", "BCH", "0.0005"));
-        list.add(new CoinBuyPojo("cardano", "Cardano", "ADA", "0.1"));
-        list.add(new CoinBuyPojo("litecoin", "Litecoin", "LTC", "0.001"));
-        list.add(new CoinBuyPojo("stellar", "Stellar", "XLM", "0.1"));
-        list.add(new CoinBuyPojo("neo", "NEO", "NEO", "0.001"));
-        list.add(new CoinBuyPojo("eos", "EOS", "EOS", "0.01"));
-        list.add(new CoinBuyPojo("nem", "NEM", "XEM", "0.1"));
-        list.add(new CoinBuyPojo("iota", "IOTA", "MIOTA", "0.01"));
-        list.add(new CoinBuyPojo("dash", "Dash", "DASH", "0.001"));
-
-        setList(list);
+//        ArrayList<CoinBuyPojo> list = new ArrayList<>();
+//
+//        list.add(new CoinBuyPojo("bitcoin", "Bitcoin", "BTC", "0.00001"));
+//        list.add(new CoinBuyPojo("ethereum", "Ethereum", "ETH", "0.0001"));
+//        list.add(new CoinBuyPojo("ripple", "Ripple", "XRP", "0.1"));
+//        list.add(new CoinBuyPojo("bitcoin-cash", "Bitcoin Cash", "BCH", "0.0005"));
+//        list.add(new CoinBuyPojo("cardano", "Cardano", "ADA", "0.1"));
+//        list.add(new CoinBuyPojo("litecoin", "Litecoin", "LTC", "0.001"));
+//        list.add(new CoinBuyPojo("stellar", "Stellar", "XLM", "0.1"));
+//        list.add(new CoinBuyPojo("neo", "NEO", "NEO", "0.001"));
+//        list.add(new CoinBuyPojo("eos", "EOS", "EOS", "0.01"));
+//        list.add(new CoinBuyPojo("nem", "NEM", "XEM", "0.1"));
+//        list.add(new CoinBuyPojo("iota", "IOTA", "MIOTA", "0.01"));
+//        list.add(new CoinBuyPojo("dash", "Dash", "DASH", "0.001"));
+//
+//        setList(list);
 
         // preparing billing
         String base64EncodedPublicKey = getString(R.string.key);
@@ -137,17 +175,87 @@ public class PurchaseActivity extends AppCompatActivity implements PurchaseAdapt
                 IntentFilter broadcastFilter = new IntentFilter(IabBroadcastReceiver.ACTION);
                 registerReceiver(mBroadcastReceiver, broadcastFilter);
 
-                // IAB is fully set up. Now, let's get an inventory of stuff we own.
-                Log.d(TAG, "Setup successful. Querying inventory.");
+                List<InAppProduct> inAppProductList;
                 try {
-                    mHelper.queryInventoryAsync(mGotInventoryListener);
-                } catch (IabHelper.IabAsyncInProgressException e) {
-                    complain("Error querying inventory. Another async operation in progress.");
+                    inAppProductList = mHelper.getInAppPurchases(ITEM_TYPE_INAPP, SKU_BTC, SKU_ETH);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    inAppProductList = new ArrayList<>();
                 }
+
+                Log.d(TAG, inAppProductList.toString());
+
+                setUpRecyclerView();
+                setList((ArrayList) inAppProductList);
+
+                // IAB is fully set up. Now, let's get an inventory of stuff we own.
+//                Log.d(TAG, "Setup successful. Querying inventory.");
+//                try {
+//                    mHelper.queryInventoryAsync(mGotInventoryListener);
+//                } catch (IabHelper.IabAsyncInProgressException e) {
+//                    complain("Error querying inventory. Another async operation in progress.");
+//                }
             }
         });
 
         setListeners();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_BUY) {
+            int responseCode = data.getIntExtra("RESPONSE_CODE", -1);
+            if (responseCode == BILLING_RESPONSE_RESULT_OK) {
+                String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
+                String dataSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");
+                // можете проверить цифровую подпись
+                readPurchase(purchaseData);
+            } else {
+                alert("responseCode = " + responseCode);
+                // обрабатываем ответ
+            }
+        }
+    }
+
+    private void readPurchase(String purchaseData) {
+        try {
+            JSONObject jsonObject = new JSONObject(purchaseData);
+            // ид покупки, для тестовой покупки будет null
+            String orderId = jsonObject.optString("orderId");
+            // "com.example.myapp"
+            String packageName = jsonObject.getString("packageName");
+            // "com.example.myapp_testing_inapp1"
+            String productId = jsonObject.getString("productId");
+            // unix-timestamp времени покупки
+            long purchaseTime = jsonObject.getLong("purchaseTime");
+
+            // PURCHASE_STATUS_PURCHASED
+            // PURCHASE_STATUS_CANCELLED
+            // PURCHASE_STATUS_REFUNDED
+            int purchaseState = jsonObject.getInt("purchaseState");
+
+            if (purchaseState == PURCHASE_STATUS_PURCHASED) {
+                alert("You just buy " + productId + " successfully!");
+            } else {
+                alert("Canceled");
+            }
+
+            // "12345"
+            String developerPayload = jsonObject.optString("developerPayload");
+            // токен покупки, с его помощью можно получить
+            // данные о покупке на сервере
+            String purchaseToken = jsonObject.getString("purchaseToken");
+            // далее вы обрабатываете покупку
+
+            Log.d(TAG,
+                    "orderId = " + orderId + "\n" +
+                            "packageName = " + packageName + "\n" +
+                            "productId = " + productId + "\n" +
+                            "purchaseToken = " + purchaseToken);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     // Listener that's called when we finish querying the items and subscriptions we own
@@ -219,8 +327,7 @@ public class PurchaseActivity extends AppCompatActivity implements PurchaseAdapt
                 Log.d(TAG, "Consumption successful. Provisioning.");
 
                 alert("You just buy criptocurrency");
-            }
-            else {
+            } else {
                 complain("Error while consuming: " + result);
             }
 //            updateUi();
@@ -229,7 +336,9 @@ public class PurchaseActivity extends AppCompatActivity implements PurchaseAdapt
         }
     };
 
-    /** Verifies the developer payload of a purchase. */
+    /**
+     * Verifies the developer payload of a purchase.
+     */
     boolean verifyDeveloperPayload(Purchase p) {
         String payload = p.getDeveloperPayload();
 
@@ -301,8 +410,13 @@ public class PurchaseActivity extends AppCompatActivity implements PurchaseAdapt
     }
 
     @Override
-    public void onBuyClicked() {
+    public void onBuyClicked(InAppProduct inAppProduct) {
         Toast.makeText(this, "buy clicked", Toast.LENGTH_SHORT).show();
+        try {
+            mHelper.purchaseProduct(this, inAppProduct);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -317,14 +431,24 @@ public class PurchaseActivity extends AppCompatActivity implements PurchaseAdapt
 
     @Override
     public void setList(ArrayList list) {
+//        Log.d(TAG, "setList started");
+//        if (mPurchaseAdapter == null) {
+//            Log.d(TAG, "mCoinsAdapter == null");
+//            mPurchaseAdapter = new PurchaseAdapter(list, this);
+//            mRvCoinsForSale.setAdapter(mPurchaseAdapter);
+//        } else {
+//            Log.d(TAG, "mCoinsAdapter != null");
+//            mPurchaseAdapter.reloadList(list);
+//        }
+
         Log.d(TAG, "setList started");
-        if (mPurchaseAdapter == null) {
+        if (mInAppProductAdapter == null) {
             Log.d(TAG, "mCoinsAdapter == null");
-            mPurchaseAdapter = new PurchaseAdapter(list, this);
-            mRvCoinsForSale.setAdapter(mPurchaseAdapter);
+            mInAppProductAdapter = new InAppProductAdapter(list, this);
+            mRvCoinsForSale.setAdapter(mInAppProductAdapter);
         } else {
             Log.d(TAG, "mCoinsAdapter != null");
-            mPurchaseAdapter.reloadList(list);
+            mInAppProductAdapter.reloadList(list);
         }
     }
 
@@ -351,6 +475,22 @@ public class PurchaseActivity extends AppCompatActivity implements PurchaseAdapt
             mHelper.queryInventoryAsync(mGotInventoryListener);
         } catch (IabHelper.IabAsyncInProgressException e) {
             complain("Error querying inventory. Another async operation in progress.");
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // very important:
+        if (mBroadcastReceiver != null) {
+            unregisterReceiver(mBroadcastReceiver);
+        }
+
+        // very important:
+        Log.d(TAG, "Destroying helper.");
+        if (mHelper != null) {
+            mHelper.disposeWhenFinished();
+            mHelper = null;
         }
     }
 }

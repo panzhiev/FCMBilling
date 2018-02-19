@@ -29,6 +29,7 @@ public class RegistrationService extends IntentService {
 
             GcmPubSub subscription = GcmPubSub.getInstance(this);
             subscription.subscribe(registrationToken, "/topics/my_little_topic", null);
+
         } catch (IOException e) {
             e.printStackTrace();
         }

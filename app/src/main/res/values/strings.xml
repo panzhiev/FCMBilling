@@ -10,6 +10,39 @@
     <string name="dialog_error_title">Error</string>
     <string name="error_message">Could not connect to the server</string>
 
-    <string name="key">MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAm9sqzl2ZCezjBgxi28XGHuEmyYdlzkFxUK1kI2mPq+oQLnpOQCzaONsS2/eZiw0LbW7n53zEmBk9eZH54JYP0kzZ4Tlw0Me+eKoMvzXWNhAb5HKOZfJPDKnR2Tu9ZUsOFjlR02rxux/3mj+ii7S7PmVdhxhkoBX8lez/yAOw6o/IHV703zlBWV8BBvvHQwWh1qb67iHHpNbaWFksetPhBC0AkARdWoVLGcjyffGBE5TYEk6G23YJfi7myxyLb9CtAiXi2pNfPHd2IDU6H40bG79v61m+HlzMM59+oJceWGaFrt1Fic1pk3xMV7D1gKxPScSLM4ldEcJJDPO6331yrQIDAQAB</string>
+    <string name="key">MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAm9sqzl2ZCezjBgxi28XGH
+        uEmyYdlzkFxUK1kI2mPq+oQLnpOQCzaONsS2/eZiw0LbW7n53zEmBk9eZH54JYP0kzZ4Tlw0Me+eKoMvzXW
+        NhAb5HKOZfJPDKnR2Tu9ZUsOFjlR02rxux/3mj+ii7S7PmVdhxhkoBX8lez/yAOw6o/IHV703zlBWV8BBvvH
+        QwWh1qb67iHHpNbaWFksetPhBC0AkARdWoVLGcjyffGBE5TYEk6G23YJfi7myxyLb9CtAiXi2pNfPHd2IDU6H4
+        0bG79v61m+HlzMM59+oJceWGaFrt1Fic1pk3xMV7D1gKxPScSLM4ldEcJJDPO6331yrQIDAQAB</string>
 
+    <string name="purchases_changed">Play Store: purchases have changed!</string>
+
+    <string name="btc">btc</string>
+    <string name="eth">eth</string>
+    <string name="xrp">xrp</string>
+    <string name="bch">bch</string>
+    <string name="ada">ada</string>
+    <string name="ltc">ltc</string>
+    <string name="xlm">xlm</string>
+    <string name="neo">neo</string>
+    <string name="eos">eos</string>
+    <string name="xem">xem</string>
+    <string name="miota">miota</string>
+    <string name="dash">dash</string>
+
+    <string-array name="array_skus">
+        <item>@string/btc</item>
+        <item>@string/eth</item>
+        <item>@string/xrp</item>
+        <item>@string/bch</item>
+        <item>@string/ada</item>
+        <item>@string/ltc</item>
+        <item>@string/xlm</item>
+        <item>@string/neo</item>
+        <item>@string/eos</item>
+        <item>@string/xem</item>
+        <item>@string/miota</item>
+        <item>@string/dash</item>
+    </string-array>
 </resources>

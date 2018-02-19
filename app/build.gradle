@@ -7,7 +7,7 @@ android {
         applicationId "com.panzhyiev.fcmexample"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 1
+        versionCode 2
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
@@ -21,6 +21,20 @@ android {
     compileOptions {
         targetCompatibility 1.8
         sourceCompatibility 1.8
+    }
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/spring.tooling'
+        exclude 'META-INF/spring.handlers'
+        exclude 'META-INF/spring.schemas'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/ASL2.0'
     }
 }
 
@@ -41,5 +55,23 @@ dependencies {
 
     compile 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+
+    compile 'org.solovyev.android:checkout:1.0.0'
+
+    compile 'org.bitcoinj:bitcoinj-core:0.14.5'
+
+    // Be sure also change value inside `ContractsTests.java`
+    compile "org.ethereum:solcJ-all:0.4.8"                   // Solidity Compiler win/mac/linux binaries
+
+    // don't forget to adjust {ethereumJ.version} in application.properties
+    compile ("org.ethereum:ethereumj-core:1.5.0-RELEASE") {
+        changing = true
+
+        exclude group: "log4j"
+        exclude group: "org.slf4j", module: "log4j-over-slf4j"
+        exclude group: "org.slf4j", module: "slf4j-log4j12"
+        exclude group: "org.ethereum", module: "solcJ-all"
+    }
+
 }
 apply plugin: 'com.google.gms.google-services'
