@@ -1,5 +1,8 @@
 package com.panzhyiev.fcmexample.ui.activity;
 
+import android.annotation.SuppressLint;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,6 +11,7 @@ import android.widget.TextView;
 
 import com.panzhyiev.fcmexample.R;
 import com.panzhyiev.fcmexample.crypto.MnemonicCodeCustom;
+import com.panzhyiev.fcmexample.crypto.ethereum.Numeric;
 import com.panzhyiev.fcmexample.db.SharedPreferencesHelper;
 
 import org.bitcoinj.crypto.DeterministicKey;
@@ -15,7 +19,9 @@ import org.bitcoinj.crypto.HDKeyDerivation;
 import org.bitcoinj.crypto.MnemonicException;
 import org.ethereum.crypto.ECKey;
 import org.spongycastle.jcajce.provider.asymmetric.ec.KeyFactorySpi;
+import org.spongycastle.util.encoders.Hex;
 
+import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 
@@ -31,6 +37,9 @@ public class MnemonicActivity extends AppCompatActivity {
     private byte[] seed;
     private String strSeed;
     private DeterministicKey child0; // key path m/0
+    private DeterministicKey child00; // key path m/0/0
+
+    ECKey ecKey;
 
     @BindView(R.id.btn_generate_seed)
     public Button mBtnSeed;
@@ -52,7 +61,9 @@ public class MnemonicActivity extends AppCompatActivity {
     public TextView mTvAddress;
 
     private DeterministicKey mDeterministicKey;
+    private Handler mHandler;
 
+    @SuppressLint("HandlerLeak")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,32 +71,54 @@ public class MnemonicActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         setListeners();
         mTvList.setText(generateMnemonic().toString());
+
+        mHandler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                mTvSeed.setText(strSeed);
+            }
+        };
     }
 
     private void setListeners() {
+
         mBtnSeed.setOnClickListener(view -> {
-            getAndStoreSeed();
+            new Thread(() -> {
+                getAndStoreSeed();
+                mHandler.sendEmptyMessage(0);
+            }).start();
         });
 
         mBtnPrivate.setOnClickListener(view -> {
             mDeterministicKey = HDKeyDerivation.createMasterPrivateKey(seed);
             child0 = HDKeyDerivation.deriveChildKey(mDeterministicKey, 0);
-            DeterministicKey child00 = HDKeyDerivation.deriveChildKey(child0, 0);
+            child00 = HDKeyDerivation.deriveChildKey(child0, 0);
 
-            ECKey ecKey = ECKey.fromPrivate(child00.getPrivKeyBytes());
+            String senderPrivKey = child00.getPrivateKeyAsHex();
 
+            BigInteger bigInteger = new BigInteger(senderPrivKey, 16);
+//            BigInteger bigInteger = new BigInteger(senderPrivKey, 16);
 
+            ecKey = ECKey.fromPrivate(bigInteger);
 
-            mTvPriv.setText(child00.getPrivateKeyAsHex());
+//            mTvPriv.setText(child00.getPrivateKeyAsHex());
+            mTvPriv.setText(senderPrivKey);
 
             Log.d(TAG, "PATH " + child00.getPathAsString());
-            Log.d(TAG, "PRIVATE HEX " + child00.getPrivateKeyAsHex());
+            Log.d(TAG, "PRIVATE HEX " + senderPrivKey);
         });
         mBtnPublic.setOnClickListener(view -> {
-            mTvPub.setText(mDeterministicKey.getPublicKeyAsHex());
+            mTvPub.setText(Hex.toHexString(ecKey.getPubKey()));
+            Log.d(TAG, "PUBLIC HEX " + Hex.toHexString(ecKey.getPubKey()));
         });
         mBtnAddress.setOnClickListener(view -> {
 
+            String addresUnchecksumed = Hex.toHexString(ecKey.getAddress());
+
+            String addressChecksumed = Numeric.toChecksumAddress("0x" + addresUnchecksumed);
+
+            mTvAddress.setText("0x" + addressChecksumed);
+            Log.d(TAG, "ADDRESS " + "0x" + addressChecksumed);
         });
     }
 
@@ -116,6 +149,7 @@ public class MnemonicActivity extends AppCompatActivity {
 //        } catch (MnemonicException.MnemonicLengthException e) {
 //            e.printStackTrace();
 //        }
+
         return mWordList;
     }
 
@@ -123,7 +157,6 @@ public class MnemonicActivity extends AppCompatActivity {
         Log.d(TAG, "getAndStoreSeed()");
         seed = MnemonicCodeCustom.toSeed(generateMnemonic(), "");
         strSeed = HEX.encode(seed);
-        mTvSeed.setText(strSeed);
 //        SharedPreferencesHelper.getInstance().putStringValue(SEED, strSeed);
     }
 }
