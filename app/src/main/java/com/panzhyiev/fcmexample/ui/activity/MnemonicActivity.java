@@ -113,12 +113,12 @@ public class MnemonicActivity extends AppCompatActivity {
         });
         mBtnAddress.setOnClickListener(view -> {
 
-            String addresUnchecksumed = Hex.toHexString(ecKey.getAddress());
+            String addressUnchecksummed = Hex.toHexString(ecKey.getAddress());
 
-            String addressChecksumed = Numeric.toChecksumAddress("0x" + addresUnchecksumed);
+            String addressChecksummed = Numeric.toChecksumAddress("0x" + addressUnchecksummed);
 
-            mTvAddress.setText("0x" + addressChecksumed);
-            Log.d(TAG, "ADDRESS " + "0x" + addressChecksumed);
+            mTvAddress.setText("0x" + addressChecksummed);
+            Log.d(TAG, "ADDRESS " + "0x" + addressChecksummed);
         });
     }
 

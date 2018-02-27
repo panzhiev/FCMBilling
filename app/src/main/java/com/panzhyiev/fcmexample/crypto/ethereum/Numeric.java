@@ -1,12 +1,10 @@
 package com.panzhyiev.fcmexample.crypto.ethereum;
 
+import org.ethereum.crypto.HashUtil;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
-
-/**
- * Created by tymur on 20.02.18.
- */
 
 public final class Numeric {
 
@@ -22,34 +20,27 @@ public final class Numeric {
             throw new MessageDecodingException("Value must be in format ^0x[a-fA-F0-9]{40}$ or 0x0");
         }
 
-        if (!address.matches(ETH_REGEX)){
+        if (!address.matches(ETH_REGEX)) {
             throw new MessageDecodingException("Value must be in format ^0x[a-fA-F0-9]{40}$ or 0x0");
         }
 
-        String addressWithoutPrefix = cleanHexPrefix(address).toLowerCase();
+        address = cleanHexPrefix(address).toLowerCase();
+        String addressHash = toHexStringNoPrefix(HashUtil.sha3(address.getBytes()));
+        StringBuilder checksumAddress = new StringBuilder();
 
-        char[] lowercaseChars = new char[] {'0', '1', '2', '3', '4', '5', '6', '7'};
-        char[] uppercaseChars = new char[] {'8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
-
-        char[] chars = addressWithoutPrefix.toCharArray();
-
-        StringBuilder stringBuilder = new StringBuilder();
-
-        for (char c : chars) {
-            for (char cl : lowercaseChars){
-                if (c == cl){
-                    stringBuilder.append(c);
+        for (int i = 0; i < 40; i++) {
+            if (Character.isLetter(address.charAt(i))) {
+                int charInt = Integer.parseInt(Character.toString(addressHash.charAt(i)), 16);
+                if (charInt <= 7) {
+                    checksumAddress.append(Character.toLowerCase(address.charAt(i)));
+                } else {
+                    checksumAddress.append(Character.toUpperCase(address.charAt(i)));
                 }
-            }
-
-            for (char cu : uppercaseChars){
-                if (c == cu){
-                    stringBuilder.append(String.valueOf(c).toUpperCase());
-                }
+            } else {
+                checksumAddress.append(address.charAt(i));
             }
         }
-
-        return stringBuilder.toString();
+        return checksumAddress.toString();
     }
 
     public static String encodeQuantity(BigInteger value) {
