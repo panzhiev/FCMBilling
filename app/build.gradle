@@ -40,39 +40,28 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
-    compile 'com.android.support:support-v4:27.0.1'
-    compile 'com.android.support:mediarouter-v7:27.0.1'
-    compile 'com.android.support:support-v13:27.0.1'
-    compile 'com.android.support:recyclerview-v7:27.0.1'
-    compile 'com.android.support:cardview-v7:27.0.1'
-    compile 'com.android.support:design:27.0.1'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.android.support:support-v4:27.0.1'
+    implementation 'com.android.support:mediarouter-v7:27.0.1'
+    implementation 'com.android.support:support-v13:27.0.1'
+    implementation 'com.android.support:recyclerview-v7:27.0.1'
+    implementation 'com.android.support:cardview-v7:27.0.1'
+    implementation 'com.android.support:design:27.0.1'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-    compile "com.google.android.gms:play-services:11.8.0"
-
-    compile 'com.jakewharton:butterknife:8.8.1'
+    implementation 'com.google.android.gms:play-services:11.8.0'
+    implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
-
-    compile 'org.solovyev.android:checkout:1.0.0'
-
-    compile 'org.bitcoinj:bitcoinj-core:0.14.5'
-
+    implementation 'org.solovyev.android:checkout:1.0.0'
+    implementation 'org.bitcoinj:bitcoinj-core:0.14.5'
     // Be sure also change value inside `ContractsTests.java`
-    compile "org.ethereum:solcJ-all:0.4.8"                   // Solidity Compiler win/mac/linux binaries
-
+    implementation 'org.ethereum:solcJ-all:0.4.8'
+    // Solidity Compiler win/mac/linux binaries
     // don't forget to adjust {ethereumJ.version} in application.properties
-    compile ("org.ethereum:ethereumj-core:1.5.0-RELEASE") {
-        changing = true
+    implementation "org.ethereum:ethereumj-core:1.6.+"
 
-        exclude group: "log4j"
-        exclude group: "org.slf4j", module: "log4j-over-slf4j"
-        exclude group: "org.slf4j", module: "slf4j-log4j12"
-        exclude group: "org.ethereum", module: "solcJ-all"
-    }
 
 }
 apply plugin: 'com.google.gms.google-services'

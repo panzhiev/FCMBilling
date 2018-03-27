@@ -1,6 +1,7 @@
 package com.panzhyiev.fcmexample.ui.activity;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +18,7 @@ import com.panzhyiev.fcmexample.db.SharedPreferencesHelper;
 import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.crypto.HDKeyDerivation;
 import org.bitcoinj.crypto.MnemonicException;
+import org.ethereum.config.net.MainNetConfig;
 import org.ethereum.crypto.ECKey;
 import org.spongycastle.jcajce.provider.asymmetric.ec.KeyFactorySpi;
 import org.spongycastle.util.encoders.Hex;
@@ -76,6 +78,7 @@ public class MnemonicActivity extends AppCompatActivity {
             @Override
             public void handleMessage(Message msg) {
                 mTvSeed.setText(strSeed);
+                Log.d(TAG, "SEED: " + strSeed);
             }
         };
     }
@@ -107,6 +110,7 @@ public class MnemonicActivity extends AppCompatActivity {
             Log.d(TAG, "PATH " + child00.getPathAsString());
             Log.d(TAG, "PRIVATE HEX " + senderPrivKey);
         });
+
         mBtnPublic.setOnClickListener(view -> {
             mTvPub.setText(Hex.toHexString(ecKey.getPubKey()));
             Log.d(TAG, "PUBLIC HEX " + Hex.toHexString(ecKey.getPubKey()));
@@ -114,11 +118,13 @@ public class MnemonicActivity extends AppCompatActivity {
         mBtnAddress.setOnClickListener(view -> {
 
             String addressUnchecksummed = Hex.toHexString(ecKey.getAddress());
-
             String addressChecksummed = Numeric.toChecksumAddress("0x" + addressUnchecksummed);
 
             mTvAddress.setText("0x" + addressChecksummed);
-            Log.d(TAG, "ADDRESS " + "0x" + addressChecksummed);
+            Log.d(TAG, "ADDRESS Checksummed" + "0x" + addressChecksummed);
+            Log.d(TAG, "ADDRESS UnChecksummed" + "0x" + addressUnchecksummed);
+
+            startActivity(new Intent(this, SpendEthereumActivity.class));
         });
     }
 

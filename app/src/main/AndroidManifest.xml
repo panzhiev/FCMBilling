@@ -81,7 +81,8 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".ui.activity.MnemonicActivity"></activity>
+        <activity android:name=".ui.activity.MnemonicActivity" />
+        <activity android:name=".ui.activity.SpendEthereumActivity"></activity>
     </application>
 
 </manifest>

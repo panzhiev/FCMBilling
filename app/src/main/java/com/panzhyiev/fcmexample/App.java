@@ -47,7 +47,8 @@ public class App extends Application {
         SharedPreferencesHelper.getInstance().initialize(this);
         INSTANCE = this;
         mBilling.addPlayStoreListener(() ->
-                Toast.makeText(App.this, R.string.purchases_changed, Toast.LENGTH_LONG)
+                Toast
+                        .makeText(App.this, R.string.purchases_changed, Toast.LENGTH_LONG)
                         .show());
     }
 

@@ -13,6 +13,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import com.matthewmitchell.emercoinj.core.Transaction;
+import com.matthewmitchell.emercoinj.params.EmercoinNetParams;
 import com.panzhyiev.fcmexample.R;
 import com.panzhyiev.fcmexample.fcm.RegistrationService;
 import com.panzhyiev.fcmexample.ui.activity.purchaseActivity.PurchaseActivity;
@@ -25,6 +27,7 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final String NOTIFICATION = "notification";
     private final String TAG = getClass().getSimpleName();
 
     private BroadcastReceiver mBroadcastReceiver;
@@ -51,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         mBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                String[] strings = intent.getStringArrayExtra("notification");
+                String[] strings = intent.getStringArrayExtra(NOTIFICATION);
 //                DialogFactory.createSimpleOkErrorDialog(MainActivity.this, strings[0], strings[1]).show();
 
                 SnackbarUtils.with(mLlMain)
@@ -66,11 +69,13 @@ public class MainActivity extends AppCompatActivity {
                         .show();
             }
         };
+
         // создаем фильтр для BroadcastReceiver
         IntentFilter intentFilter = new IntentFilter(BROADCAST_ACTION);
         // регистрируем (включаем) BroadcastReceiver
         registerReceiver(mBroadcastReceiver, intentFilter);
 
+        Transaction transaction = new Transaction(EmercoinNetParams.get());
 
         mBtnBuy.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, PurchaseActivity2.class)));
 
